@@ -635,7 +635,7 @@ autoTrade = function () {
       gamePage.activeTabId = 'Trade'; gamePage.render();
     }
     for (var i = 0; i < gamePage.diplomacyTab.racePanels.length; i++) {
-      if (gamePage.diplomacyTab.racePanels[i].name == race.title) {
+      if (gamePage.diplomacyTab.racePanels[i].race.title == race.title) {
         if (!gamePage.diplomacyTab.racePanels[i].tradeBtn.enabled) {
           gamePage.activeTabId = 'Trade'; gamePage.render();
         }
