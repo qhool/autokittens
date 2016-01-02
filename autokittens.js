@@ -130,12 +130,9 @@ function rebuildOptionsUI() {
   addCheckbox(uiContainer, 'autoOptions', 'autoFestival', 'Automatically try to hold festivals');
 
   addHeading(uiContainer, 'Auto-trading')
-  races = [["No one", ""]];
-  gamePage.diplomacy.races.forEach(function (r) {
-    if (r.unlocked) {
-      races.push([r.title || r.name, r.name]);
-    }
-  });
+  races = getTradeRaces();
+
+  addTriggerCheckbox(uiContainer, 'autoOptions.tradeOptions', 'showAllRaces', 'Show locked races','updateTradeRaces()');
   addOptionMenu(uiContainer, 'autoOptions.tradeOptions', 'tradePartner', 'Trade with', races, 'by default');
   addCheckbox(uiContainer, 'autoOptions.tradeOptions', 'suppressTradeLog', 'Hide log messages when auto-trading');
   races[0][0] = "Default selection";
@@ -590,6 +587,33 @@ autoPray = function () {
   if (faith.value / faith.maxValue >= autoOptions.prayLimit && faith.value > 0.01) {
     gamePage.religion.praise();
   }
+}
+
+getTradeRaces = function () {
+    races = [["No one", ""]];
+    gamePage.diplomacy.races.forEach(function (r) {
+        if (r.unlocked || autoOptions.tradeOptions.showAllRaces) {
+            races.push([r.title || r.name, r.name]);
+        }
+    });
+    return races;
+};
+
+updateTradeRaces = function () {
+    var races = getTradeRaces();
+    var seasons = ["","Spring", "Summer", "Autumn", "Winter"];
+    for( i in seasons ) {
+        opts = $('#autoKittens_tradePartner'+seasons[i]);
+        sel = opts.val();
+        opts.empty();
+        for( j in races ) {
+            option = $("<option></option>");
+            option.attr("value", races[j][1]).text(races[j][0]);
+            option.attr("selected",sel == races[j][1]);
+            opts.append(option);
+        }
+        races[0][0] = "Default selection";
+    }
 }
 
 autoTrade = function () {
