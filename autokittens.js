@@ -854,6 +854,8 @@ function calculateBaseUps(extras) {
   var pastures = gamePage.bld.get('unicornPasture').val + (extras[0] || 0);
   var baseUps = pastures * gamePage.bld.get('unicornPasture').effects['unicornsPerTickBase'] * gamePage.rate;
 
+  var globalUps = (1 + gamePage.workshop.getEffect('unicornsGlobalRatio'));
+
   var tombs = gamePage.religion.getZU('unicornTomb').val + (extras[1] || 0);
   var towers = gamePage.religion.getZU('ivoryTower').val + (extras[2] || 0);
   var citadels = gamePage.religion.getZU('ivoryCitadel').val + (extras[3] || 0);
@@ -874,7 +876,7 @@ function calculateBaseUps(extras) {
   var paragonRatio = gamePage.resPool.get("paragon").value * 0.01;
 	paragonRatio = 1 + gamePage.bld.getHyperbolicEffect(paragonRatio, 2);
 
-  return baseUps * bldEffect * faithEffect * paragonRatio;
+  return baseUps * globalUps * bldEffect * faithEffect * paragonRatio;
 }
 
 function calculateRiftUps(extras) {
