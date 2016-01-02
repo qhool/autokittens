@@ -15,14 +15,14 @@ function buildUI() {
   $('#headerLinks').append(' | <a onclick="rebuildOptionsUI();$(\'#autoOptions\').toggle();" href="#">AutoKittens</a> | <a onclick="rebuildCalculatorUI();$(\'#kittenCalcs\').toggle();" href="#">Calculators</a>');
 
   var uiContainer = document.createElement('div');
-  uiContainer.className = 'help';
+  $(uiContainer).addClass('dialog help');
   uiContainer.id = 'autoOptions';
   uiContainer.style.display = 'none';
   uiContainer.style.overflowY = 'scroll';
   $('#gamePageContainer').append(uiContainer);
 
   var calcContainer = document.createElement('div');
-  calcContainer.className = 'help';
+  $(calcContainer).addClass('dialog help');
   calcContainer.id = 'kittenCalcs';
   calcContainer.style.display = 'none';
   calcContainer.style.overflowY = 'scroll';
