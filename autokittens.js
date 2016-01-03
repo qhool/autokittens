@@ -178,7 +178,10 @@ function rebuildOptionsUI() {
   addIndent(uiContainer);addInputField(uiContainer, 'autoOptions.craftOptions', 'compediumAmount', 'When storage full, craft', 'compendium(s) at a time');
   addTriggerOptionMenu(uiContainer, 'autoOptions.furOptions', 'blueprintMode', 'Auto-craft blueprints', [['never', 0], ['all, before hunting', 1], ['on full science storage', 2], ['both', 3]], '', 'changeFurCrafts()');
   addIndent(uiContainer);addInputField(uiContainer, 'autoOptions.craftOptions', 'blueprintAmount', 'When storage full, craft', 'blueprints(s) at a time');
+  addIndent(uiContainer);addInputField(uiContainer, 'autoOptions.craftOptions', 'blueprintCompendiumRatio', 'Keep', ' compendium to blueprint ratio');
+  addIndent(uiContainer);addInputField(uiContainer, 'autoOptions.craftOptions', 'compendiumsHWMRatio', 'Retain at least', '% of compendium high-water mark.');
   addCheckbox(uiContainer, 'autoOptions.craftOptions', 'blueprintPriority', 'When crafting both from full storage, check blueprints before compendiums');
+
 
   addHeading(uiContainer, 'Auto-hunting');
   addOptionMenu(uiContainer, 'autoOptions.huntOptions', 'huntLimit', 'Hunt when catpower is', percentages, 'full')
@@ -546,9 +549,19 @@ calculateCraftAmounts = function() {
   updateOptionsUI();
 }
 
+//TODO: better place to put this?
+var compendium_hwm = 0;
 autoCraft = function () {
   if (!autoOptions.autoCraft)
-    return;
+      return;
+  var n_compendiums = gamePage.resPool.get('compedium').value; //SIC
+  if( n_compendiums > compendium_hwm ) {
+    compendium_hwm = n_compendiums;
+  }
+  var min_c_r = (autoOptions.craftOptions.blueprintCompendiumRatio || 0) * gamePage.resPool.get('blueprint').value;
+  var min_c_h = ((autoOptions.craftOptions.compendiumsHWMRatio || 0)/100) * compendium_hwm;
+  var min_compendiums = min_c_r > min_c_h ? min_c_r : min_c_h;
+  var craft_blueprints = gamePage.science.get('construction').researched && (min_compendiums < n_compendiums);
   var resources = [
     ["catnip",      "wood" , "craftWood", true],
     ["wood",        "beam" , "craftBeam", gamePage.science.get('construction').researched],
@@ -560,9 +573,9 @@ autoCraft = function () {
     ["oil", "kerosene", "craftKerosene", gamePage.science.get('construction').researched],
     ["culture", "parchment", "craftParchment", gamePage.science.get('construction').researched],
     ["culture", "manuscript", "craftManuscript", gamePage.science.get('construction').researched && (!autoOptions.craftOptions.festivalBuffer || gamePage.resPool.get('parchment').value > 2500 + 25 * autoOptions.craftOptions.manuscriptAmount)],
-    ["science", "blueprint", "craftBlueprint", gamePage.science.get('construction').researched && autoOptions.craftOptions.blueprintPriority],
+    ["science", "blueprint", "craftBlueprint", craft_blueprints && autoOptions.craftOptions.blueprintPriority],
     ["science", "compedium", "craftCompendium", gamePage.science.get('construction').researched],
-    ["science", "blueprint", "craftBlueprint", gamePage.science.get('construction').researched && !autoOptions.craftOptions.blueprintPriority]
+    ["science", "blueprint", "craftBlueprint", craft_blueprints && !autoOptions.craftOptions.blueprintPriority]
   ];
   for (var i = 0; i < resources.length; i++) {
     var curRes = gamePage.resPool.get(resources[i][0]);
