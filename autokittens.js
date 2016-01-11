@@ -637,12 +637,12 @@ autoTrade = function () {
   var season = ["Spring", "Summer", "Autumn", "Winter"][gamePage.calendar.season];
   if (autoOptions.tradeOptions['tradePartner' + season] !== "") {
     race = gamePage.diplomacy.get(autoOptions.tradeOptions['tradePartner' + season]);
-    if (!race.unlocked) {
+    if (!race.unlocked && !autoOptions.tradeOptions.showAllRaces) {
       autoOptions.tradeOptions['tradePartner' + season] = "";
     }
   } else {
     race = gamePage.diplomacy.get(autoOptions.tradeOptions.tradePartner);
-    if (!race.unlocked) {
+    if (!race.unlocked && !autoOptions.tradeOptions.showAllRaces) {
       autoOptions.tradeOptions.tradePartner = "";
     }
   }
